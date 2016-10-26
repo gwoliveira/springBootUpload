@@ -2,6 +2,7 @@ package br.com.kismet.controller;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,17 +45,22 @@ public class MainConstroller {
 	public String handleFileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes)
 			throws IOException {
 
-		redirectAttributes.addFlashAttribute("message",
-				"You successfully uploaded " + file.getOriginalFilename() + "!");
 		Path filePath = rootDir.resolve(file.getOriginalFilename());
-		Files.copy(file.getInputStream(), filePath);
-		storeRepository.save(new Store(file.getOriginalFilename(), filePath.toString()));
+		try {
+			Files.copy(file.getInputStream(), filePath);
+			storeRepository.save(new Store(file.getOriginalFilename(), filePath.toString()));
+			redirectAttributes.addFlashAttribute("message",
+					"You successfully uploaded " + file.getOriginalFilename() + "!");
+		} catch (FileAlreadyExistsException e) {
+			redirectAttributes.addFlashAttribute("message",
+					"Erro arquivo já existe !!!" + file.getOriginalFilename() + "!");
+		}
 		return "redirect:/";
 	}
 
-	@GetMapping("/{filename:.+}")
+	@GetMapping("/imagens")
 	@ResponseBody
-	public ResponseEntity<Resource> serveFile(@PathVariable String filename) throws MalformedURLException {
+	public ResponseEntity<Resource> serveFile(@RequestParam("path") String filename) throws MalformedURLException {
 		UrlResource file = new UrlResource(rootDir.resolve(filename).toUri());
 		return ResponseEntity.ok()
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")

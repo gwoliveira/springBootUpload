@@ -17,8 +17,8 @@
 	<div>
 		<ul>
 			<li th:each="file : ${files}">
-				<a th:href="@{{path}(path=${file.name})}" >
-				<img  th:src="@{{path}(path=${file.name})}"/>
+				<a th:href="@{/imagens(path=${file.name})}" >
+				<img  th:src="@{/imagens(path=${file.name})}"/>
 				</a>
 			</li>
 		</ul>
