@@ -66,4 +66,9 @@ public class MainConstroller {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"")
 				.body(file);
 	}
+	
+	@GetMapping("/login")
+	public String login(){
+		return "login";
+	}
 }

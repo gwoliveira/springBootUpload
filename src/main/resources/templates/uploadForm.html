@@ -1,26 +1,36 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <body>
-
+	Usuário logado:
+	<span sec:authentication="name"></span>
+	<form th:action="@{/logout}" method="post">
+		<input type="submit" value="Sign Out" />
+	</form>
 	<div th:if="${message}">
 		<h2 th:text="${message}"></h2>
 	</div>
 
-	<div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')">
 		<form method="POST" enctype="multipart/form-data" action="/">
 			<table>
-				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
-				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+				<tr>
+					<td>File to upload:</td>
+					<td><input type="file" name="file" /></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td><input type="submit" value="Upload" /></td>
+				</tr>
 			</table>
 		</form>
 	</div>
 
 	<div>
 		<ul>
-			<li th:each="file : ${files}">
-				<a th:href="@{/imagens(path=${file.name})}" >
-				<img  th:src="@{/imagens(path=${file.name})}"/>
-				</a>
-			</li>
+			<li th:each="file : ${files}"><a
+				th:href="@{/imagens(path=${file.name})}"> <img
+					th:src="@{/imagens(path=${file.name})}" />
+			</a></li>
 		</ul>
 	</div>
 
